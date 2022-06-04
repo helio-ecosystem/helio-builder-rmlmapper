@@ -7,6 +7,6 @@ This builder wraps the [RMLMapper](https://github.com/RMLio/rmlmapper-java) nati
 
 Use the following coordinates for importer the RML builder as an external component for the Helio ecosystem:
 
-  * source `https://github.com/helio-ecosystem/helio-builder-rmlmapper/releases/download/%230.1.0/helio-builder-rmlmapper-0.1.0.jar` 
+  * source `https://github.com/helio-ecosystem/helio-builder-rmlmapper/releases/download/v0.1.1/helio-builder-rmlmapper-0.1.1.jar` 
   * class `helio.builder.rmlmapper.RmlUnitBuilder`
   * type `BUILDER` 
