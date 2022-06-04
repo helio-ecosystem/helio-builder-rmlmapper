@@ -25,7 +25,6 @@ import com.google.gson.JsonObject;
 
 public class RmlTranslationUnit implements TranslationUnit{
 
-	private static final String CODE_EXCEPTION = "translation_exception_internal_error-AAABBB";
 	private String mapping;
 	private Integer scheduledTime;
 	private UnitType type;
@@ -56,7 +55,7 @@ public class RmlTranslationUnit implements TranslationUnit{
 		            QuadStore rmlStore = QuadStoreFactory.read(mappingStream);
 
 		            // Set up the basepath for the records factory, i.e., the basepath for the (local file) data sources
-		            RecordsFactory factory = new RecordsFactory(".");
+		            RecordsFactory factory = new RecordsFactory("./");
 		            @SuppressWarnings("rawtypes")
 					Map<String, Class> libraryMap = new HashMap<>();
 		            libraryMap.put("IDLabFunctions", IDLabFunctions.class);
@@ -78,7 +77,7 @@ public class RmlTranslationUnit implements TranslationUnit{
 
 	@Override
 	public List<String> getDataTranslated() throws TranslationUnitExecutionException {
-		if(!builder.isEmpty()) {
+		if(builder.length() > 0) {
 			String msg = builder.toString();
 			builder = new StringBuilder();
 			throw new TranslationUnitExecutionException(msg);

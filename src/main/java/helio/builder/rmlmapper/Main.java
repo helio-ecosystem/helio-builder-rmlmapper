@@ -25,7 +25,7 @@ public class Main {
 			+ "\n"
 			+ "<#Trip> a rr:TriplesMap;\n"
 			+ "  rml:logicalSource [\n"
-			+ "    rml:source \"./data/E-Scooter_Trips_2019_sample_10_percent-updated.csv\" ;\n"
+			+ "    rml:source \"./E-Scooter_Trips_2019_sample_10_percent-updated.csv\" ;\n"
 			+ "    rml:referenceFormulation ql:CSV \n"
 			+ "  ];\n"
 			+ "\n"
@@ -137,7 +137,7 @@ public class Main {
 			+ "<#StartCommunity> a rr:TriplesMap;\n"
 			+ "\n"
 			+ "  rml:logicalSource [\n"
-			+ "      rml:source \"./data/E-Scooter_Trips_2019_sample_10_percent-updated.csv\" ;\n"
+			+ "      rml:source \"./E-Scooter_Trips_2019_sample_10_percent-updated.csv\" ;\n"
 			+ "      rml:referenceFormulation ql:CSV \n"
 			+ "    ];\n"
 			+ "\n"
@@ -173,7 +173,7 @@ public class Main {
 			+ "<#EndCommunity> a rr:TriplesMap;\n"
 			+ "\n"
 			+ "  rml:logicalSource [\n"
-			+ "      rml:source \"./data/E-Scooter_Trips_2019_sample_10_percent-updated.csv\" ;\n"
+			+ "      rml:source \"./E-Scooter_Trips_2019_sample_10_percent-updated.csv\" ;\n"
 			+ "      rml:referenceFormulation ql:CSV \n"
 			+ "    ];\n"
 			+ "\n"
@@ -209,7 +209,7 @@ public class Main {
 			+ "<#StartCentroid> a rr:TriplesMap;\n"
 			+ "\n"
 			+ "  rml:logicalSource [\n"
-			+ "      rml:source \"./data/E-Scooter_Trips_2019_sample_10_percent-updated.csv\" ;\n"
+			+ "      rml:source \"./E-Scooter_Trips_2019_sample_10_percent-updated.csv\" ;\n"
 			+ "      rml:referenceFormulation ql:CSV \n"
 			+ "    ];\n"
 			+ "\n"
@@ -232,7 +232,7 @@ public class Main {
 			+ "<#EndCentroid> a rr:TriplesMap;\n"
 			+ "\n"
 			+ "  rml:logicalSource [\n"
-			+ "      rml:source \"./data/E-Scooter_Trips_2019_sample_10_percent-updated.csv\" ;\n"
+			+ "      rml:source \"./E-Scooter_Trips_2019_sample_10_percent-updated.csv\" ;\n"
 			+ "      rml:referenceFormulation ql:CSV \n"
 			+ "    ];\n"
 			+ "\n"
@@ -255,7 +255,7 @@ public class Main {
 			+ "<#StartLocation> a rr:TriplesMap;\n"
 			+ "\n"
 			+ "  rml:logicalSource [\n"
-			+ "      rml:source \"./data/E-Scooter_Trips_2019_sample_10_percent-updated.csv\" ;\n"
+			+ "      rml:source \"./E-Scooter_Trips_2019_sample_10_percent-updated.csv\" ;\n"
 			+ "      rml:referenceFormulation ql:CSV \n"
 			+ "    ];\n"
 			+ "\n"
@@ -283,7 +283,7 @@ public class Main {
 			+ "<#EndLocation> a rr:TriplesMap;\n"
 			+ "\n"
 			+ "  rml:logicalSource [\n"
-			+ "      rml:source \"./data/E-Scooter_Trips_2019_sample_10_percent-updated.csv\" ;\n"
+			+ "      rml:source \"./E-Scooter_Trips_2019_sample_10_percent-updated.csv\" ;\n"
 			+ "      rml:referenceFormulation ql:CSV \n"
 			+ "    ];\n"
 			+ "\n"
@@ -311,9 +311,9 @@ public class Main {
 	
 	public static void main(String[] args) throws IncompatibleMappingException, TranslationUnitExecutionException, IncorrectMappingException, ExtensionNotFoundException {
 		UnitBuilder wrap = new RmlUnitBuilder();
-		for(TranslationUnit unit: wrap.parseMapping(mapping)) {
-			System.out.println(unit.getDataTranslated().get(0));
-		}
+		TranslationUnit unit = wrap.parseMapping(mapping).iterator().next();
+		unit.getTask().run();
+		System.out.println(unit.getDataTranslated());
 		
 
 	}
