@@ -19,16 +19,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.google.gson.JsonObject;
 
 public class RmlTranslationUnit implements TranslationUnit{
 
-
+	private static final String CODE_EXCEPTION = "translation_exception_internal_error-AAABBB";
 	private String mapping;
 	private Integer scheduledTime;
 	private UnitType type;
 	private String uuid;
+	private List<String> translations = new CopyOnWriteArrayList<>();
+	private StringBuilder builder = new StringBuilder();
 	
 	public RmlTranslationUnit(String mapping) {
 		this.mapping = mapping;
@@ -38,45 +41,62 @@ public class RmlTranslationUnit implements TranslationUnit{
 	
 	@Override
 	public Runnable getTask() throws TranslationUnitExecutionException {
-		// TODO Auto-generated method stub
-		return null;
+		return new Runnable() {
+
+			@Override
+			public void run() {
+				String result = translate();
+				if(result!=null)
+					translations.add(result);
+			}
+			
+			private String translate() {
+				try {
+		            InputStream mappingStream = new ByteArrayInputStream(mapping.getBytes());
+		            QuadStore rmlStore = QuadStoreFactory.read(mappingStream);
+
+		            // Set up the basepath for the records factory, i.e., the basepath for the (local file) data sources
+		            RecordsFactory factory = new RecordsFactory(".");
+		            @SuppressWarnings("rawtypes")
+					Map<String, Class> libraryMap = new HashMap<>();
+		            libraryMap.put("IDLabFunctions", IDLabFunctions.class);
+		            FunctionLoader functionLoader = new FunctionLoader(null, libraryMap);
+		            QuadStore outputStore = new RDF4JStore();
+		            Executor executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(mappingStream));
+		            QuadStore result = executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
+
+		            Writer writer = new StringWriter();
+		            result.write(writer, "turtle");
+		            return writer.toString();
+		        } catch (Exception e) {
+		        	builder.append(e.toString());
+		        	return null;
+		        }
+			}
+		};
 	}
 
 	@Override
 	public List<String> getDataTranslated() throws TranslationUnitExecutionException {
+		if(!builder.isEmpty()) {
+			String msg = builder.toString();
+			builder = new StringBuilder();
+			throw new TranslationUnitExecutionException(msg);
+			
+		}
 		List<String> translations = new ArrayList<>();
-		translations.add(translate());
+		translations.addAll(this.translations);
+		this.translations.clear();
 		return translations;
 	}
 
 	@Override
 	public void flushDataTranslated() throws TranslationUnitExecutionException {
 		// empty
+		translations.clear();
 	}
 	
-	private String translate() throws TranslationUnitExecutionException {
-		try {
-            InputStream mappingStream = new ByteArrayInputStream(mapping.getBytes());
-            QuadStore rmlStore = QuadStoreFactory.read(mappingStream);
-
-            // Set up the basepath for the records factory, i.e., the basepath for the (local file) data sources
-            RecordsFactory factory = new RecordsFactory(".");
-            @SuppressWarnings("rawtypes")
-			Map<String, Class> libraryMap = new HashMap<>();
-            libraryMap.put("IDLabFunctions", IDLabFunctions.class);
-            FunctionLoader functionLoader = new FunctionLoader(null, libraryMap);
-            QuadStore outputStore = new RDF4JStore();
-            Executor executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(mappingStream));
-            QuadStore result = executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
-
-            Writer writer = new StringWriter();
-            result.write(writer, "turtle");
-            return writer.toString();
-        } catch (Exception e) {
-        	throw new TranslationUnitExecutionException(e.toString());
-           
-        }
-	}
+	
 
 	@Override
 	public void configure(JsonObject configuration) {
