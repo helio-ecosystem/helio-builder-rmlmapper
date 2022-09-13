@@ -2,10 +2,6 @@ package helio.builder.rmlmapper;
 
 import helio.blueprints.TranslationUnit;
 import helio.blueprints.UnitBuilder;
-import helio.blueprints.exceptions.ExtensionNotFoundException;
-import helio.blueprints.exceptions.IncompatibleMappingException;
-import helio.blueprints.exceptions.IncorrectMappingException;
-import helio.blueprints.exceptions.TranslationUnitExecutionException;
 
 public class Main {
 
@@ -309,11 +305,11 @@ public class Main {
 			+ "  ] .";
 	
 	
-	public static void main(String[] args) throws IncompatibleMappingException, TranslationUnitExecutionException, IncorrectMappingException, ExtensionNotFoundException {
+	public static void main(String[] args) throws Exception {
 		UnitBuilder wrap = new RmlUnitBuilder();
 		TranslationUnit unit = wrap.parseMapping(mapping).iterator().next();
-		unit.getTask().run();
-		System.out.println(unit.getDataTranslated());
+		String out = unit.getTask(null).call();
+		System.out.println(out);
 		
 
 	}

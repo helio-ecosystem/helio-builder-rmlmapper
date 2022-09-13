@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.helio-ecosystem</groupId>
   <artifactId>helio-builder-rmlmapper</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
   <name>Helio Builder for RML Mappings</name>
   <description>This builder wraps the RMLMapper for processing RML mappings</description>
   
@@ -33,7 +33,7 @@
 		 <dependency>
             <groupId>io.github.helio-ecosystem</groupId>
             <artifactId>helio-blueprints</artifactId>
-            <version>0.4.22</version>
+            <version>0.4.26</version>
         </dependency>
     </dependencies>
     

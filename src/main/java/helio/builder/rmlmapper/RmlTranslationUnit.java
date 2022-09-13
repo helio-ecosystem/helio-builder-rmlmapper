@@ -11,16 +11,14 @@ import be.ugent.rml.store.RDF4JStore;
 import be.ugent.rml.term.NamedNode;
 import helio.blueprints.TranslationUnit;
 import helio.blueprints.UnitType;
+import helio.blueprints.exceptions.IncorrectMappingException;
 import helio.blueprints.exceptions.TranslationUnitExecutionException;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-
+import java.util.concurrent.Callable;
 import com.google.gson.JsonObject;
 
 public class RmlTranslationUnit implements TranslationUnit{
@@ -29,8 +27,6 @@ public class RmlTranslationUnit implements TranslationUnit{
 	private Integer scheduledTime;
 	private UnitType type;
 	private String uuid;
-	private List<String> translations = new CopyOnWriteArrayList<>();
-	private StringBuilder builder = new StringBuilder();
 	
 	public RmlTranslationUnit(String mapping) {
 		this.mapping = mapping;
@@ -39,17 +35,10 @@ public class RmlTranslationUnit implements TranslationUnit{
 	}
 	
 	@Override
-	public Runnable getTask() throws TranslationUnitExecutionException {
-		return new Runnable() {
-
-			@Override
-			public void run() {
-				String result = translate();
-				if(result!=null)
-					translations.add(result);
-			}
+	public Callable<String> getTask(Map<String, Object> arguments) throws TranslationUnitExecutionException {
+		return new Callable<String>() {
 			
-			private String translate() {
+			private String translate() throws IncorrectMappingException {
 				try {
 		            InputStream mappingStream = new ByteArrayInputStream(mapping.getBytes());
 		            QuadStore rmlStore = QuadStoreFactory.read(mappingStream);
@@ -63,37 +52,23 @@ public class RmlTranslationUnit implements TranslationUnit{
 		            QuadStore outputStore = new RDF4JStore();
 		            Executor executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(mappingStream));
 		            QuadStore result = executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
-
+		            System.out.println(result);
 		            Writer writer = new StringWriter();
 		            result.write(writer, "turtle");
 		            return writer.toString();
 		        } catch (Exception e) {
-		        	builder.append(e.toString());
-		        	return null;
+		        	throw new IncorrectMappingException(e.toString());
 		        }
+			}
+
+			@Override
+			public String call() throws IncorrectMappingException {
+				return translate();
 			}
 		};
 	}
 
-	@Override
-	public List<String> getDataTranslated() throws TranslationUnitExecutionException {
-		if(builder.length() > 0) {
-			String msg = builder.toString();
-			builder = new StringBuilder();
-			throw new TranslationUnitExecutionException(msg);
-			
-		}
-		List<String> translations = new ArrayList<>();
-		translations.addAll(this.translations);
-		this.translations.clear();
-		return translations;
-	}
-
-	@Override
-	public void flushDataTranslated() throws TranslationUnitExecutionException {
-		// empty
-		translations.clear();
-	}
+	
 	
 	
 
