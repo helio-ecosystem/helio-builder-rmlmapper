@@ -52,7 +52,6 @@ public class RmlTranslationUnit implements TranslationUnit{
 		            QuadStore outputStore = new RDF4JStore();
 		            Executor executor = new Executor(rmlStore, factory, functionLoader, outputStore, Utils.getBaseDirectiveTurtle(mappingStream));
 		            QuadStore result = executor.executeV5(null).get(new NamedNode("rmlmapper://default.store"));
-		            System.out.println(result);
 		            Writer writer = new StringWriter();
 		            result.write(writer, "turtle");
 		            return writer.toString();
